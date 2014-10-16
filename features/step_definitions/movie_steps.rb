@@ -55,23 +55,33 @@ Given /the following movies have been added to RottenPotatoes:/ do |movies_table
     # The keys will be the table headers and the values will be the row contents.
     # You should arrange to add that movie to the database here.
     # You can add the entries directly to the databasse with ActiveRecord methodsQ
+	Movie.create!(movie)
   end
-  flunk "Unimplemented"
 end
 
 When /^I have opted to see movies rated: "(.*?)"$/ do |arg1|
   # HINT: use String#split to split up the rating_list, then
   # iterate over the ratings and check/uncheck the ratings
   # using the appropriate Capybara command(s)
-  flunk "Unimplemented"
+  rating_list = arg1.gsub(/,/,'').split(' ')
+  Movie.all_ratings.each do |rating|
+  	find_str = sprintf("input[id$='ratings_%s']", rating)
+  	find(:css, find_str).set(rating_list.include?(rating))
+  end
+  click_button 'Refresh'
 end
 
 Then /^I should see only movies rated "(.*?)"$/ do |arg1|
-  flunk "Unimplemented" 
+  rating_list = arg1.gsub(/,/,'').split(' ')
+  all('#movies tr > td:nth-child(2)').each do |rating|
+	assert(rating_list.include?(rating.text), "#{rating.text} is not rated correctly")
+  end
 end
 
 Then /^I should see all of the movies$/ do
-  flunk "Unimplemented"
+  expected_num_movies = 10
+  num_movies = all('#movies tr').count
+  assert(num_movies == expected_num_movies + 1, "Expected #{expected_num_movies} got #{num_movies}")# add one for header
 end
 
 
